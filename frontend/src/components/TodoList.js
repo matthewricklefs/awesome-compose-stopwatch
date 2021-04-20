@@ -1,4 +1,5 @@
 import React from "react";
+import BtnDisplay from "./BtnDisplay";
 
 export default class TodoList extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ export default class TodoList extends React.Component {
             }}
           >
             {todo.text}
+            <BtnDisplay/>
           </li>
         ))}
       </ul>
@@ -37,13 +39,21 @@ export default class TodoList extends React.Component {
   }
 
   render() {
-    let { todos } = this.props;
-    return todos.length > 0 ? (
-      this.renderTodos(todos)
-    ) : (
-      <div className="alert alert-primary" role="alert">
-        No Todos to display
-      </div>
-    );
+    try{
+      let { todos } = this.props;
+      return todos.length > 0 ? (
+        this.renderTodos(todos)
+      ) : (
+        <div className="alert alert-primary" role="alert">
+          No Todos to display
+        </div>
+      );
+    } catch (err) {
+      return(
+        <div className="alert alert-primary" role="alert">
+          Something went wrong: {JSON.stringify(err)};
+        </div> 
+      )
+    }
   }
 }

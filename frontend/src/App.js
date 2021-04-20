@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import AddTodo from "./components/AddTodo";
 import TodoList from "./components/TodoList";
-import BtnDisplay from "./components/BtnDisplay";
-import Display from "./components/Display";
 
 import "./App.scss";
 
@@ -17,13 +15,18 @@ import "./App.scss";
 
 // TODO 3:  be able to access all saved timespans
 
+/**
+ * Multi line comments are your friends
+ * @returns 
+ */
 function App() {
-  const [todos, setTodos] = useState(0);
-  const [time, setTime] = useState({ ms: 0, s: 0, m: 0, h: 0 });
-  const [interv, setInterv] = useState();
-  const [status, setStatus] = useState(0);
+  const [todos, setTodos] = useState([]);
 
-  axios
+  /**
+   * Go fetch the todos already saved in our DB.
+   */
+  const fetchTodos = () => {
+    axios
     .get("/api")
     .then((response) => {
       setTodos({
@@ -31,62 +34,31 @@ function App() {
       });
     })
     .catch((e) => console.log("Error : ", e));
+  };
 
+  /**
+   * Niffty lifecycle things from React for computations by side effect.
+   */
+  useEffect(() => {
+    fetchTodos();
+  }, [todos.length]); // if the length of the array is not passed as the second paramter of useEffect we will end up in an infinite loop.
+
+  /**
+   * Handle adding a todo
+   * Notice that this function is passed as a paramter to a component later.
+   * @param {*} value 
+   */
   const handleAddTodo = (value) => {
+    console.log('handleAddTodo', typeof todos.todos, todos.todos); // it seems that todos is an object with a key called 'todos' and an array value {todos: []}. Is this intended?
     axios
       .post("/api/todos", { text: value })
       .then(() => {
         setTodos({
-          todos: [...todos, { text: value }],
+          todos: [...todos.todos, { text: value }],
         });
       })
       .catch((e) => console.log("Error : ", e));
   };
-
-  // Not started = 0
-  // started = 1
-  // stopped = 2
-
-  const start = () => {
-    run();
-    setStatus(1);
-    setInterv(setInterval(run, 10));
-  };
-
-  var updatedMs = time.ms,
-    updatedS = time.s,
-    updatedM = time.m,
-    updatedH = time.h;
-
-  const run = () => {
-    if (updatedM === 60) {
-      updatedH++;
-      updatedM = 0;
-    }
-    if (updatedS === 60) {
-      updatedM++;
-      updatedS = 0;
-    }
-    if (updatedMs === 100) {
-      updatedS++;
-      updatedMs = 0;
-    }
-    updatedMs++;
-    return setTime({ ms: updatedMs, s: updatedS, m: updatedM, h: updatedH });
-  };
-
-  const stop = () => {
-    clearInterval(interv);
-    setStatus(2);
-  };
-
-  const reset = () => {
-    clearInterval(interv);
-    setStatus(0);
-    setTime({ ms: 0, s: 0, m: 0, h: 0 });
-  };
-
-  const resume = () => start();
 
   return (
     <div className="App container">
@@ -94,18 +66,10 @@ function App() {
         <div className="row">
           <div className="col-xs-12 col-sm-8 col-md-8 offset-md-2">
             <h1>Todos</h1>
+            <h2>Now with stop-watches!</h2>
             <div className="todo-app">
-              <AddTodo onClick={handleAddTodo} />
-              <TodoList todos={todos} />
-
-              <BtnDisplay
-                status={status}
-                resume={resume}
-                reset={reset}
-                stop={stop}
-                start={start}
-              />
-              <Display time={time} />
+              <AddTodo handleAddTodo={handleAddTodo} />
+              <TodoList todos={todos.todos} />
             </div>
           </div>
         </div>

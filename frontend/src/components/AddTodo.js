@@ -5,7 +5,7 @@ function AddTodo(props) {
     e.preventDefault();
     const { value } = e.target.elements.value;
     if (value.length > 0) {
-      handleAddTodo(value);
+      props.handleAddTodo(value);
       e.target.reset();
     }
   };
