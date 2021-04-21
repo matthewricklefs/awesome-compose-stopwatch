@@ -1,4 +1,5 @@
 import React from "react";
+import BtnDisplay from "./BtnDisplay";
 
 export default class TodoList extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ export default class TodoList extends React.Component {
             }}
           >
             {todo.text}
+            <BtnDisplay />
           </li>
         ))}
       </ul>

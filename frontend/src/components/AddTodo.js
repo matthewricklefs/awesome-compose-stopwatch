@@ -5,14 +5,18 @@ function AddTodo(props) {
     e.preventDefault();
     const { value } = e.target.elements.value;
     if (value.length > 0) {
-      handleAddTodo(value);
+      props.handleAddTodo(value);
       e.target.reset();
     }
   };
 
   return (
     <div>
-      <form noValidate onSubmit={handleSubmit} className="new-todo form-group">
+      <form
+        noValidate
+        onSubmit={() => handleSubmit}
+        className="new-todo form-group"
+      >
         <input
           type="text"
           name="value"
